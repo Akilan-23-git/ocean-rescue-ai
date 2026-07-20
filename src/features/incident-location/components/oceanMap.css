@@ -1,0 +1,62 @@
+.ocean-map {
+  z-index: 0;
+  border: 1px solid rgba(148, 163, 184, 0.12);
+}
+
+.incident-dot {
+  display: block;
+  width: 24px;
+  height: 24px;
+  background: #ef4444;
+  border: 3px solid #fff;
+  border-radius: 50%;
+  box-shadow: 0 0 12px rgba(239, 68, 68, 0.6);
+  animation: pulse 2s infinite;
+}
+
+.reference-dot {
+  display: block;
+  width: 16px;
+  height: 16px;
+  background: #00d4ff;
+  border: 2px solid #fff;
+  border-radius: 50%;
+  box-shadow: 0 0 8px rgba(0, 212, 255, 0.5);
+}
+
+.port-dot {
+  display: block;
+  width: 10px;
+  height: 10px;
+  background: #10b981;
+  border: 2px solid #fff;
+  border-radius: 2px;
+}
+
+@keyframes pulse {
+  0%,
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  50% {
+    transform: scale(1.15);
+    opacity: 0.85;
+  }
+}
+
+.leaflet-container {
+  font-family: 'Inter', sans-serif;
+  background: #0a1628;
+}
+
+.leaflet-popup-content-wrapper {
+  background: #111827;
+  color: #f1f5f9;
+  border-radius: 8px;
+  border: 1px solid rgba(148, 163, 184, 0.2);
+}
+
+.leaflet-popup-tip {
+  background: #111827;
+}
