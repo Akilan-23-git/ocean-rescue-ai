@@ -28,3 +28,10 @@ dist-ssr
 .env
 .env.local
 .env.*.local
+backend/.env
+backend/.venv
+backend/data/
+backend/tests/_testdata/
+__pycache__/
+*.pyc
+.pytest_cache/

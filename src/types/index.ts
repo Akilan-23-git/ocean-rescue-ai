@@ -1,5 +1,13 @@
 import type { SimulationConfig, SimulationResult, SearchAreaData } from './simulation';
 import type { LiveTrackingState, RescueDecisionData } from './tracking';
+import type {
+  MissionTimelineEvent,
+  MissionNote,
+  MissionAttachment,
+  MissionOutcome,
+  ActualPathPoint,
+  ReplaySnapshot,
+} from './management';
 
 export type IncidentType =
   | 'man_overboard'
@@ -21,7 +29,18 @@ export type ObjectType =
 
 export type LifeJacketStatus = 'wearing' | 'not_wearing' | 'unknown' | 'not_applicable';
 
-export type MissionStatus = 'draft' | 'active' | 'simulating' | 'completed' | 'cancelled';
+export type MissionTriggerType = 'MANUAL' | 'SMS' | 'SOS_DEVICE';
+
+export type MissionStatus =
+  | 'draft'
+  | 'active'
+  | 'simulating'
+  | 'completed'
+  | 'cancelled'
+  | 'archived'
+  | 'new_emergency'
+  | 'needs_review'
+  | 'error';
 
 export interface Coordinates {
   lat: number;
@@ -53,6 +72,22 @@ export interface Mission {
   searchArea?: SearchAreaData;
   liveTracking?: LiveTrackingState;
   rescueDecision?: RescueDecisionData;
+  timeline?: MissionTimelineEvent[];
+  notes?: MissionNote[];
+  attachments?: MissionAttachment[];
+  outcome?: MissionOutcome;
+  actualPath?: ActualPathPoint[];
+  replaySnapshots?: ReplaySnapshot[];
+  archivedAt?: string;
+  searchHistory?: string[];
+  /** Phase A — mission origin */
+  triggerType?: MissionTriggerType;
+  source?: string;
+  rawMessage?: string;
+  messageSid?: string;
+  locationRequired?: boolean;
+  validationErrors?: string[];
+  receivedAt?: string;
   createdAt: string;
   updatedAt: string;
 }

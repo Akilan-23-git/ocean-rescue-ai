@@ -151,13 +151,18 @@ export function IncidentLocationPanel() {
       : null;
 
   const handleSave = () => {
-    if (!missionId || !position) {
+    if (!missionId || !position || !mission) {
       setSnackbar({ open: true, message: 'Please set a last known position' });
       return false;
     }
     const updated = missionService.update(missionId, {
       lastKnownPosition: position,
       referencePoints,
+      locationRequired: false,
+      status:
+        mission.status === 'needs_review' || mission.status === 'new_emergency'
+          ? 'new_emergency'
+          : mission.status,
     });
     if (updated) {
       setCurrentMission(updated);
@@ -194,6 +199,13 @@ export function IncidentLocationPanel() {
         badge={<PhaseIndicator currentPhase={2} totalPhases={13} label="Incident Location" />}
         action={<StatusChip status={mission.status} />}
       />
+
+      {(mission.locationRequired || (!mission.lastKnownPosition && mission.triggerType === 'SMS')) && (
+        <Alert severity="warning" sx={{ mb: 2 }}>
+          Emergency received, but location is missing. Set the last known position on the map to continue.
+          {mission.triggerType === 'SMS' && ` Source: SMS (${mission.source ?? 'unknown'}).`}
+        </Alert>
+      )}
 
       <Box sx={{ ...laptopMapColumn, minHeight: MAP_PANEL_HEIGHT }}>
         <Box>

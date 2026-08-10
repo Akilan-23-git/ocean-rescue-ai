@@ -1,10 +1,11 @@
-import { Box, Button, Typography, alpha } from '@mui/material';
+import { Box, Button, Typography, Chip, alpha } from '@mui/material';
 import { LaptopContainer } from '@/components/layout/LaptopContainer';
 import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
 import RadarIcon from '@mui/icons-material/Radar';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import TrendingUpIcon from '@mui/icons-material/TrendingUp';
 import AccessTimeIcon from '@mui/icons-material/AccessTime';
+import WarningAmberIcon from '@mui/icons-material/WarningAmber';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { PageHeader } from '@/components/ui/PageHeader';
@@ -12,15 +13,26 @@ import { StatCard } from '@/components/ui/StatCard';
 import { GlassCard } from '@/components/ui/GlassCard';
 import { StatusChip } from '@/components/ui/StatusChip';
 import { useMissions } from '@/features/mission/hooks/useMissions';
+import { useEmergencyAlerts } from '@/context/EmergencyContext';
 import { OBJECT_TYPES } from '@/constants';
 import { formatCoordinates } from '@/utils';
 
 export function DashboardPage() {
   const navigate = useNavigate();
   const { data: missions = [] } = useMissions();
+  const { activeEmergencyCount } = useEmergencyAlerts();
 
-  const activeMissions = missions.filter((m) => m.status === 'active' || m.status === 'simulating');
+  const activeMissions = missions.filter(
+    (m) =>
+      m.status === 'active' ||
+      m.status === 'simulating' ||
+      m.status === 'new_emergency' ||
+      m.status === 'needs_review',
+  );
   const completedMissions = missions.filter((m) => m.status === 'completed');
+  const emergencies = missions.filter(
+    (m) => m.status === 'new_emergency' || m.status === 'needs_review',
+  );
   const recentMissions = missions.slice(0, 5);
 
   return (
@@ -39,12 +51,19 @@ export function DashboardPage() {
         }
       />
 
-      <Box sx={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 2.5, mb: 3 }}>
+      <Box sx={{ display: 'grid', gridTemplateColumns: 'repeat(5, 1fr)', gap: 2.5, mb: 3 }}>
         <StatCard
             title="Total Missions"
             value={missions.length}
             icon={<RadarIcon />}
             color="#1e6fd9"
+          />
+        <StatCard
+            title="Active Emergencies"
+            value={activeEmergencyCount || emergencies.length}
+            subtitle="SMS / needs review"
+            icon={<WarningAmberIcon />}
+            color="#ef4444"
           />
         <StatCard
             title="Active Missions"
@@ -62,7 +81,7 @@ export function DashboardPage() {
         <StatCard
             title="System Status"
             value="Online"
-            subtitle="All services operational"
+            subtitle="SMS sync every 5s"
             icon={<AccessTimeIcon />}
             color="#10b981"
           />
@@ -131,7 +150,15 @@ export function DashboardPage() {
                         ` · ${formatCoordinates(mission.lastKnownPosition.lat, mission.lastKnownPosition.lng)}`}
                     </Typography>
                   </Box>
-                  <StatusChip status={mission.status} />
+                  <Box sx={{ display: 'flex', gap: 1, alignItems: 'center' }}>
+                    <Chip
+                      size="small"
+                      label={mission.triggerType ?? 'MANUAL'}
+                      color={mission.triggerType === 'SMS' ? 'error' : 'default'}
+                      variant="outlined"
+                    />
+                    <StatusChip status={mission.status} />
+                  </Box>
                 </Box>
               ))
             )}
@@ -151,6 +178,8 @@ export function DashboardPage() {
               { phase: 4, title: 'Simulation Setup', desc: 'Configure drift model and particles' },
               { phase: 5, title: 'Drift Prediction', desc: 'View trajectories and AI analysis' },
               { phase: 6, title: 'Search Area', desc: 'Probability zones and search grid' },
+              { phase: 7, title: 'Live Tracking', desc: 'Real-time drift monitoring & replay' },
+              { phase: 8, title: 'Decision Support', desc: 'Rescue stations, vessels, AI guidance' },
             ].map((step) => (
               <Box
                 key={step.phase}

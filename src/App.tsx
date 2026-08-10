@@ -4,6 +4,7 @@ import { RouterProvider } from 'react-router-dom';
 import { maritimeTheme } from '@/theme';
 import { LayoutProvider } from '@/context/LayoutContext';
 import { MissionProvider } from '@/context/MissionContext';
+import { EmergencyProvider } from '@/context/EmergencyContext';
 import { router } from '@/routes';
 
 const queryClient = new QueryClient({
@@ -22,7 +23,9 @@ export default function App() {
         <CssBaseline />
         <LayoutProvider>
           <MissionProvider>
-            <RouterProvider router={router} />
+            <EmergencyProvider>
+              <RouterProvider router={router} />
+            </EmergencyProvider>
           </MissionProvider>
         </LayoutProvider>
       </ThemeProvider>

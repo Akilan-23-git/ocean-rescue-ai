@@ -10,6 +10,10 @@ const statusConfig: Record<
   simulating: { label: 'Simulating', color: 'info' },
   completed: { label: 'Completed', color: 'primary' },
   cancelled: { label: 'Cancelled', color: 'error', variant: 'outlined' },
+  archived: { label: 'Archived', color: 'default' },
+  new_emergency: { label: 'New Emergency', color: 'error' },
+  needs_review: { label: 'Needs Review', color: 'warning' },
+  error: { label: 'Error', color: 'error', variant: 'outlined' },
 };
 
 interface StatusChipProps {
@@ -18,7 +22,7 @@ interface StatusChipProps {
 }
 
 export function StatusChip({ status, size = 'small' }: StatusChipProps) {
-  const config = statusConfig[status];
+  const config = statusConfig[status] ?? statusConfig.draft;
   return (
     <Chip
       label={config.label}
