@@ -15,6 +15,8 @@ interface OceanMapProps {
   onMapClick: (coords: Coordinates) => void;
   onMarkerDrag: (coords: Coordinates) => void;
   onMeasureClick: (coords: Coordinates) => void;
+  /** Reported GPS uncertainty in meters (accuracy circle). */
+  gpsAccuracyMeters?: number | null;
 }
 
 function MapClickHandler({
@@ -79,9 +81,14 @@ export function OceanMap({
   onMapClick,
   onMarkerDrag,
   onMeasureClick,
+  gpsAccuracyMeters = null,
 }: OceanMapProps) {
   const center = position ?? DEFAULT_MAP_CENTER;
-  const zoom = position ? 8 : DEFAULT_MAP_ZOOM;
+  const zoom = position
+    ? gpsAccuracyMeters != null && gpsAccuracyMeters > 0
+      ? Math.max(12, Math.min(16, Math.round(16 - Math.log10(Math.max(gpsAccuracyMeters, 5)))))
+      : 12
+    : DEFAULT_MAP_ZOOM;
 
   const handleDragEnd = useCallback(
     (e: { target: { getLatLng: () => { lat: number; lng: number } } }) => {
@@ -118,11 +125,31 @@ export function OceanMap({
           eventHandlers={{ dragend: handleDragEnd }}
         >
           <Popup>
-            <strong>Last Known Position</strong>
+            <strong>Emergency Position</strong>
             <br />
-            {position.lat.toFixed(4)}°, {position.lng.toFixed(4)}°
+            {position.lat.toFixed(6)}°, {position.lng.toFixed(6)}°
+            {gpsAccuracyMeters != null && (
+              <>
+                <br />
+                GPS accuracy: ±{gpsAccuracyMeters.toFixed(0)} m (reported uncertainty)
+              </>
+            )}
           </Popup>
         </Marker>
+      )}
+
+      {position && gpsAccuracyMeters != null && gpsAccuracyMeters > 0 && (
+        <Circle
+          center={[position.lat, position.lng]}
+          radius={gpsAccuracyMeters}
+          pathOptions={{
+            color: '#ef4444',
+            fillColor: '#ef4444',
+            fillOpacity: 0.12,
+            weight: 2,
+            dashArray: '4 6',
+          }}
+        />
       )}
 
       {layers.referencePoints &&

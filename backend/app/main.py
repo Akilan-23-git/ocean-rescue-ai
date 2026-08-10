@@ -9,8 +9,8 @@ settings = get_settings()
 
 app = FastAPI(
     title="MSAR Emergency API",
-    description="SMS emergency webhook and mission sync for Maritime Search & Rescue",
-    version="1.0.0-phase-a",
+    description="SMS + SOS device emergency triggers for Maritime Search & Rescue",
+    version="1.1.0-phase-b",
 )
 
 app.add_middleware(
@@ -27,4 +27,4 @@ app.include_router(missions_router)
 
 @app.get("/health")
 def health() -> dict:
-    return {"status": "ok", "phase": "A", "service": "msar-emergency-api"}
+    return {"status": "ok", "phase": "B", "service": "msar-emergency-api"}

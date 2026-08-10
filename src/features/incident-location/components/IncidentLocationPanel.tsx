@@ -216,6 +216,7 @@ export function IncidentLocationPanel() {
               layers={layers}
               measureMode={measureMode}
               measurePoints={measurePoints}
+              gpsAccuracyMeters={mission.gpsAccuracy}
               onMapClick={updatePosition}
               onMarkerDrag={updatePosition}
               onMeasureClick={(coords) => {
@@ -232,6 +233,13 @@ export function IncidentLocationPanel() {
                 color="primary"
                 variant="outlined"
               />
+              {typeof mission.gpsAccuracy === 'number' && (
+                <Chip
+                  label={`GPS ±${mission.gpsAccuracy.toFixed(0)} m`}
+                  color={mission.gpsAccuracy > 50 ? 'warning' : 'secondary'}
+                  variant="outlined"
+                />
+              )}
               {measureDistance !== null && (
                 <Chip
                   icon={<StraightenIcon />}
@@ -241,6 +249,33 @@ export function IncidentLocationPanel() {
                 />
               )}
             </Box>
+          )}
+
+          {(mission.triggerType === 'SOS_DEVICE' || mission.triggerType === 'SMS' || mission.triggerType === 'MANUAL') && (
+            <GlassCard sx={{ p: 2, mt: 1.5 }}>
+              <Typography variant="caption" fontWeight={700} color="text.secondary">
+                MISSION TRIGGER
+              </Typography>
+              <Typography variant="body2" fontWeight={600}>
+                Trigger: {mission.triggerType === 'SOS_DEVICE' ? 'SOS DEVICE' : mission.triggerType ?? 'MANUAL'}
+              </Typography>
+              <Typography variant="body2" color="text.secondary">
+                Source: {mission.source ?? mission.triggerType ?? 'MANUAL'}
+              </Typography>
+              {mission.lastKnownPosition && (
+                <Typography variant="body2" fontFamily="monospace" sx={{ mt: 0.5 }}>
+                  {formatCoordinates(mission.lastKnownPosition.lat, mission.lastKnownPosition.lng)}
+                </Typography>
+              )}
+              {typeof mission.gpsAccuracy === 'number' && (
+                <Typography variant="body2" color="text.secondary">
+                  Accuracy: {mission.gpsAccuracy.toFixed(0)} meters (reported GPS uncertainty)
+                </Typography>
+              )}
+              <Typography variant="caption" color="text.secondary" display="block" sx={{ mt: 0.5 }}>
+                Timestamp: {new Date(mission.incidentDateTime).toLocaleString()} · Status: {mission.status}
+              </Typography>
+            </GlassCard>
           )}
         </Box>
 

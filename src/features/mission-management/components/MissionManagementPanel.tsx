@@ -197,8 +197,14 @@ export function MissionManagementPanel() {
                     <Box sx={{ display: 'flex', gap: 1, alignItems: 'center' }}>
                       <Chip
                         size="small"
-                        label={m.triggerType ?? 'MANUAL'}
-                        color={m.triggerType === 'SMS' ? 'error' : 'default'}
+                        label={
+                          m.triggerType === 'SOS_DEVICE' ? 'SOS' : m.triggerType ?? 'MANUAL'
+                        }
+                        color={
+                          m.triggerType === 'SMS' || m.triggerType === 'SOS_DEVICE'
+                            ? 'error'
+                            : 'default'
+                        }
                         variant="outlined"
                       />
                       <StatusChip status={m.status} />
@@ -232,6 +238,19 @@ export function MissionManagementPanel() {
                 <Typography variant="caption" color="text.secondary" display="block" gutterBottom>
                   Assigned team: <strong>{selected.rescueTeamName}</strong>
                 </Typography>
+                <Typography variant="caption" color="text.secondary" display="block">
+                  Trigger: {selected.triggerType === 'SOS_DEVICE' ? 'SOS DEVICE' : selected.triggerType ?? 'MANUAL'}
+                  {' · '}
+                  Source: {selected.source ?? selected.triggerType ?? 'MANUAL'}
+                </Typography>
+                {selected.lastKnownPosition && (
+                  <Typography variant="caption" color="text.secondary" display="block" fontFamily="monospace">
+                    {formatCoordinates(selected.lastKnownPosition.lat, selected.lastKnownPosition.lng)}
+                    {typeof selected.gpsAccuracy === 'number'
+                      ? ` · ±${selected.gpsAccuracy.toFixed(0)} m GPS`
+                      : ''}
+                  </Typography>
+                )}
                 <Typography variant="caption" color="text.secondary" display="block" sx={{ mb: 2 }}>
                   Outcome: {selected.outcome ?? 'ongoing'} · Updated{' '}
                   {new Date(selected.updatedAt).toLocaleString()}

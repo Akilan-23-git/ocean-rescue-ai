@@ -37,3 +37,24 @@ class SmsProcessResult(BaseModel):
     status: Optional[str] = None
     message: str
     errors: list[str] = Field(default_factory=list)
+
+
+class SOSRequest(BaseModel):
+    deviceId: str = Field(min_length=4, max_length=128)
+    latitude: float
+    longitude: float
+    accuracy: float = Field(ge=0)
+    timestamp: datetime
+    emergencyType: str = "man_overboard"
+    numberOfPeople: int = Field(default=1, ge=1)
+    clientEventId: Optional[str] = None
+
+
+class SOSResponse(BaseModel):
+    success: bool
+    duplicate: bool = False
+    missionId: Optional[str] = None
+    status: Optional[str] = None
+    message: str
+    errors: list[str] = Field(default_factory=list)
+    gpsAccuracyMeters: Optional[float] = None

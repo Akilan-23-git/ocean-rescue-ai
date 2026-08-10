@@ -61,7 +61,7 @@ export function DashboardPage() {
         <StatCard
             title="Active Emergencies"
             value={activeEmergencyCount || emergencies.length}
-            subtitle="SMS / needs review"
+            subtitle="SMS / SOS / needs review"
             icon={<WarningAmberIcon />}
             color="#ef4444"
           />
@@ -81,7 +81,7 @@ export function DashboardPage() {
         <StatCard
             title="System Status"
             value="Online"
-            subtitle="SMS sync every 5s"
+            subtitle="Emergency sync every 5s"
             icon={<AccessTimeIcon />}
             color="#10b981"
           />
@@ -153,8 +153,16 @@ export function DashboardPage() {
                   <Box sx={{ display: 'flex', gap: 1, alignItems: 'center' }}>
                     <Chip
                       size="small"
-                      label={mission.triggerType ?? 'MANUAL'}
-                      color={mission.triggerType === 'SMS' ? 'error' : 'default'}
+                      label={
+                        mission.triggerType === 'SOS_DEVICE'
+                          ? 'SOS'
+                          : mission.triggerType ?? 'MANUAL'
+                      }
+                      color={
+                        mission.triggerType === 'SMS' || mission.triggerType === 'SOS_DEVICE'
+                          ? 'error'
+                          : 'default'
+                      }
                       variant="outlined"
                     />
                     <StatusChip status={mission.status} />

@@ -55,6 +55,8 @@ class MissionRecord(BaseModel):
     messageSid: Optional[str] = None
     locationRequired: bool = False
     validationErrors: list[str] = Field(default_factory=list)
+    gpsAccuracy: Optional[float] = None
+    deviceId: Optional[str] = None
     createdAt: str
     updatedAt: str
     receivedAt: Optional[str] = None

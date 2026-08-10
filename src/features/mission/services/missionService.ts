@@ -127,6 +127,8 @@ export const missionService = {
           validationErrors: remoteMission.validationErrors,
           receivedAt: remoteMission.receivedAt,
           updatedAt: remoteMission.updatedAt,
+          gpsAccuracy: remoteMission.gpsAccuracy,
+          deviceId: remoteMission.deviceId,
         };
         updated += 1;
       }

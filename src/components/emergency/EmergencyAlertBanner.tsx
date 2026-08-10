@@ -14,6 +14,7 @@ export function EmergencyAlertBanner() {
   const mission = latestAlert;
   if (!mission) return null;
 
+  const isSos = mission.triggerType === 'SOS_DEVICE';
   const incident =
     INCIDENT_TYPES.find((i) => i.value === mission.incidentType)?.label ??
     mission.incidentType.replace(/_/g, ' ').toUpperCase();
@@ -23,9 +24,16 @@ export function EmergencyAlertBanner() {
     if (mission.locationRequired || !mission.lastKnownPosition) {
       navigate(`/missions/${mission.id}/location`);
     } else {
-      navigate(`/missions/${mission.id}/environment`);
+      navigate(`/missions/${mission.id}/location`);
     }
   };
+
+  const sourceLabel =
+    mission.triggerType === 'SOS_DEVICE'
+      ? 'SOS DEVICE'
+      : mission.triggerType === 'SMS'
+        ? 'SMS'
+        : mission.triggerType ?? 'UNKNOWN';
 
   return (
     <AnimatePresence>
@@ -54,7 +62,7 @@ export function EmergencyAlertBanner() {
             <Box sx={{ display: 'flex', gap: 1, alignItems: 'center' }}>
               <WarningAmberIcon color="error" />
               <Typography variant="subtitle1" fontWeight={800} color="error.main">
-                NEW EMERGENCY
+                {isSos ? 'SOS ACTIVATED' : 'NEW EMERGENCY'}
               </Typography>
             </Box>
             <IconButton size="small" onClick={dismissAlert} aria-label="dismiss">
@@ -62,30 +70,40 @@ export function EmergencyAlertBanner() {
             </IconButton>
           </Box>
 
-          <Typography variant="h6" fontWeight={700} sx={{ mt: 1 }}>
+          <Typography variant="body2" color="text.secondary" sx={{ mt: 1 }}>
+            Mission:
+          </Typography>
+          <Typography variant="h6" fontWeight={700}>
             {mission.missionId}
           </Typography>
-          <Typography variant="body2" fontWeight={600} sx={{ mb: 1.5 }}>
+          <Typography variant="body2" fontWeight={600} sx={{ mb: 1 }}>
             {incident}
           </Typography>
 
           <Typography variant="body2" color="text.secondary">
-            {mission.numberOfPeople} PERSON{mission.numberOfPeople === 1 ? '' : 'S'}
+            Source: {sourceLabel}
           </Typography>
 
           {mission.lastKnownPosition ? (
-            <Typography variant="body2" fontFamily="monospace" sx={{ mt: 0.5 }}>
-              {formatCoordinates(mission.lastKnownPosition.lat, mission.lastKnownPosition.lng)}
-            </Typography>
+            <>
+              <Typography variant="body2" color="text.secondary" sx={{ mt: 1 }}>
+                Location:
+              </Typography>
+              <Typography variant="body2" fontFamily="monospace">
+                {formatCoordinates(mission.lastKnownPosition.lat, mission.lastKnownPosition.lng)}
+              </Typography>
+            </>
           ) : (
             <Typography variant="body2" color="warning.main" sx={{ mt: 0.5 }} fontWeight={600}>
               LOCATION_REQUIRED — Emergency received, but location is missing.
             </Typography>
           )}
 
-          <Typography variant="caption" color="text.secondary" display="block" sx={{ mt: 1.5 }}>
-            SOURCE: {mission.triggerType ?? 'SMS'} · FROM: {mission.source ?? 'UNKNOWN'}
-          </Typography>
+          {typeof mission.gpsAccuracy === 'number' && (
+            <Typography variant="body2" color="text.secondary" sx={{ mt: 0.5 }}>
+              GPS Accuracy: {mission.gpsAccuracy.toFixed(0)} meters
+            </Typography>
+          )}
 
           <Button variant="contained" color="error" fullWidth sx={{ mt: 2 }} onClick={openMission}>
             OPEN MISSION

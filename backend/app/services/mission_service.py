@@ -8,7 +8,12 @@ from typing import Optional
 from uuid import uuid4
 
 from app.config import get_settings
-from app.schemas.emergency import EmergencySMSEvent, ParsedEmergency, ParseValidationResult
+from app.schemas.emergency import (
+    EmergencySMSEvent,
+    ParsedEmergency,
+    ParseValidationResult,
+    SOSRequest,
+)
 from app.schemas.mission import Coordinates, MissionRecord, MissionStatus, MissionTriggerType
 
 
@@ -169,3 +174,81 @@ def create_mission_from_sms(
         ],
     )
     return store.save_mission(mission, event.messageSid)
+
+
+def create_mission_from_sos(request: SOSRequest) -> tuple[MissionRecord, bool]:
+    """Create mission from SOS device GPS. Returns (mission, is_duplicate)."""
+    store = get_mission_store()
+    event_key = request.clientEventId or (
+        f"sos:{request.deviceId}:{request.timestamp.astimezone(timezone.utc).strftime('%Y%m%d%H%M%S')}"
+    )
+
+    existing = store.get_by_message_sid(event_key)
+    if existing:
+        return existing, True
+
+    errors: list[str] = []
+    if not -90 <= request.latitude <= 90:
+        errors.append("Latitude out of range (-90..90)")
+    if not -180 <= request.longitude <= 180:
+        errors.append("Longitude out of range (-180..180)")
+    if request.accuracy < 0:
+        errors.append("Accuracy must be >= 0")
+    if request.numberOfPeople < 1:
+        errors.append("numberOfPeople must be >= 1")
+
+    if errors:
+        raise ValueError("; ".join(errors))
+
+    mission_id = store.next_mission_id()
+    now = datetime.now(timezone.utc).isoformat()
+    incident_iso = request.timestamp.astimezone(timezone.utc).isoformat()
+    accuracy_note = f"GPS accuracy reported: {request.accuracy:.1f} m (not exact)."
+    if request.accuracy > 50:
+        accuracy_note += " WARNING: LOW GPS ACCURACY."
+
+    emergency = request.emergencyType if request.emergencyType else "man_overboard"
+
+    mission = MissionRecord(
+        id=str(uuid4()),
+        missionId=mission_id,
+        name=f"SOS Device — {emergency.replace('_', ' ').title()}",
+        rescueTeamName="SOS Device Desk",
+        incidentType=emergency if emergency in {
+            "man_overboard",
+            "vessel_distress",
+            "missing_vessel",
+            "oil_spill",
+            "container_lost",
+            "search_rescue",
+            "other",
+        } else "man_overboard",
+        objectType="missing_person",
+        numberOfPeople=request.numberOfPeople,
+        lastKnownPosition=Coordinates(lat=request.latitude, lng=request.longitude),
+        incidentDateTime=incident_iso,
+        additionalNotes=accuracy_note,
+        status=MissionStatus.NEW_EMERGENCY,
+        triggerType=MissionTriggerType.SOS_DEVICE,
+        source="SOS_DEVICE",
+        rawMessage=None,
+        messageSid=event_key,
+        locationRequired=False,
+        validationErrors=[],
+        gpsAccuracy=request.accuracy,
+        deviceId=request.deviceId,
+        createdAt=now,
+        updatedAt=now,
+        receivedAt=now,
+        timeline=[
+            {
+                "id": str(uuid4()),
+                "type": "created",
+                "title": "SOS activated from device GPS",
+                "description": f"Device {request.deviceId[:12]}… · accuracy {request.accuracy:.1f}m",
+                "timestamp": now,
+                "actor": "SOS Device",
+            }
+        ],
+    )
+    return store.save_mission(mission, event_key), False

@@ -88,6 +88,8 @@ export interface Mission {
   locationRequired?: boolean;
   validationErrors?: string[];
   receivedAt?: string;
+  gpsAccuracy?: number;
+  deviceId?: string;
   createdAt: string;
   updatedAt: string;
 }

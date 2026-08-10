@@ -58,7 +58,9 @@ export function EmergencyProvider({ children }: { children: ReactNode }) {
     setEmergencyTick((t) => t + 1);
 
     const fresh = added.filter(
-      (m) => m.triggerType === 'SMS' && !seenRef.current.has(m.missionId),
+      (m) =>
+        (m.triggerType === 'SMS' || m.triggerType === 'SOS_DEVICE') &&
+        !seenRef.current.has(m.missionId),
     );
     if (fresh.length > 0) {
       setLatestAlert(fresh[0]);

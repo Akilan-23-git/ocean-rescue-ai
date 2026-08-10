@@ -11,8 +11,14 @@ import { LiveTrackingPage } from '@/pages/LiveTrackingPage';
 import { RescueDecisionPage } from '@/pages/RescueDecisionPage';
 import { WeatherPage } from '@/pages/WeatherPage';
 import { PlaceholderPage } from '@/pages/PlaceholderPage';
+import { SosEmergencyPage } from '@/pages/SosEmergencyPage';
+import { MissionManagementPage } from '@/pages/MissionManagementPage';
 
 export const router = createBrowserRouter([
+  {
+    path: '/sos',
+    element: <SosEmergencyPage />,
+  },
   {
     path: '/',
     element: <DashboardLayout />,
@@ -26,12 +32,7 @@ export const router = createBrowserRouter([
       { path: 'missions/:missionId/search-area', element: <SearchAreaPage /> },
       { path: 'missions/:missionId/tracking', element: <LiveTrackingPage /> },
       { path: 'missions/:missionId/decisions', element: <RescueDecisionPage /> },
-      {
-        path: 'missions/active',
-        element: (
-          <PlaceholderPage title="Active Missions" subtitle="Monitor ongoing rescue operations" phase={9} />
-        ),
-      },
+      { path: 'missions/active', element: <MissionManagementPage /> },
       {
         path: 'missions/history',
         element: (

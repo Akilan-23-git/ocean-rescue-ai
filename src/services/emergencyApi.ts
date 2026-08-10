@@ -12,6 +12,32 @@ export async function fetchRemoteMissions(): Promise<Mission[]> {
   return (data.data ?? []).map(normalizeRemoteMission);
 }
 
+export interface SOSPayload {
+  deviceId: string;
+  latitude: number;
+  longitude: number;
+  accuracy: number;
+  timestamp: string;
+  emergencyType: string;
+  numberOfPeople: number;
+  clientEventId: string;
+}
+
+export interface SOSApiResponse {
+  success: boolean;
+  duplicate: boolean;
+  missionId: string | null;
+  status: string | null;
+  message: string;
+  gpsAccuracyMeters: number | null;
+  errors: string[];
+}
+
+export async function submitSosEmergency(payload: SOSPayload): Promise<SOSApiResponse> {
+  const { data } = await emergencyClient.post<SOSApiResponse>('/emergency/sos', payload);
+  return data;
+}
+
 function normalizeRemoteMission(raw: Mission): Mission {
   return {
     ...raw,
@@ -21,6 +47,8 @@ function normalizeRemoteMission(raw: Mission): Mission {
     attachments: raw.attachments ?? [],
     searchHistory: raw.searchHistory ?? [],
     triggerType: raw.triggerType ?? 'SMS',
+    gpsAccuracy: raw.gpsAccuracy,
+    deviceId: raw.deviceId,
     lifeJacketStatus: raw.lifeJacketStatus ?? 'unknown',
     outcome: raw.outcome ?? 'ongoing',
   };
