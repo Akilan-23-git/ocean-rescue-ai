@@ -11,6 +11,8 @@ body,
 #root {
   height: 100%;
   width: 100%;
+  min-width: 1280px;
+  overflow-x: auto;
 }
 
 body {
@@ -21,4 +23,19 @@ body {
 a {
   color: inherit;
   text-decoration: none;
+}
+
+/* Laptop-optimized scrollbars */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(0, 212, 255, 0.25);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
 }

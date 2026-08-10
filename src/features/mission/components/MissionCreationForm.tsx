@@ -25,6 +25,8 @@ import Inventory2Icon from '@mui/icons-material/Inventory2';
 import { motion } from 'framer-motion';
 import { GlassCard } from '@/components/ui/GlassCard';
 import { PageHeader, PhaseIndicator } from '@/components/ui/PageHeader';
+import { LaptopContainer } from '@/components/layout/LaptopContainer';
+import { laptopTwoColumn } from '@/constants/layout';
 import {
   INCIDENT_TYPES,
   OBJECT_TYPES,
@@ -131,7 +133,7 @@ export function MissionCreationForm({ missionId, initialData, isEdit }: MissionC
   });
 
   return (
-    <Box>
+    <LaptopContainer>
       <PageHeader
         title="Create New Mission"
         subtitle="Initialize a maritime search and rescue operation with incident details"
@@ -139,9 +141,8 @@ export function MissionCreationForm({ missionId, initialData, isEdit }: MissionC
       />
 
       <form>
-        <Grid container spacing={3}>
-          <Grid item xs={12} lg={8}>
-            <GlassCard sx={{ p: 3 }}>
+        <Box sx={laptopTwoColumn}>
+          <GlassCard sx={{ p: 3 }}>
               <Typography variant="h6" gutterBottom fontWeight={600}>
                 Mission Details
               </Typography>
@@ -345,10 +346,8 @@ export function MissionCreationForm({ missionId, initialData, isEdit }: MissionC
                 />
               </Box>
             </GlassCard>
-          </Grid>
 
-          <Grid item xs={12} lg={4}>
-            <GlassCard sx={{ p: 3, position: 'sticky', top: 16 }} delay={0.1}>
+          <GlassCard sx={{ p: 3, position: 'sticky', top: 16 }} delay={0.1}>
               <Typography variant="h6" gutterBottom fontWeight={600}>
                 Mission Summary
               </Typography>
@@ -414,8 +413,7 @@ export function MissionCreationForm({ missionId, initialData, isEdit }: MissionC
                 </Typography>
               )}
             </GlassCard>
-          </Grid>
-        </Grid>
+        </Box>
       </form>
 
       <Snackbar
@@ -428,6 +426,6 @@ export function MissionCreationForm({ missionId, initialData, isEdit }: MissionC
           {snackbar.message}
         </Alert>
       </Snackbar>
-    </Box>
+    </LaptopContainer>
   );
 }

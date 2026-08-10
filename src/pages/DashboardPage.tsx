@@ -1,4 +1,5 @@
-import { Box, Grid, Button, Typography, alpha } from '@mui/material';
+import { Box, Button, Typography, alpha } from '@mui/material';
+import { LaptopContainer } from '@/components/layout/LaptopContainer';
 import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
 import RadarIcon from '@mui/icons-material/Radar';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
@@ -23,7 +24,7 @@ export function DashboardPage() {
   const recentMissions = missions.slice(0, 5);
 
   return (
-    <Box>
+    <LaptopContainer>
       <PageHeader
         title="Operations Dashboard"
         subtitle="Maritime Search & Rescue Prediction System — Real-time mission overview"
@@ -38,46 +39,37 @@ export function DashboardPage() {
         }
       />
 
-      <Grid container spacing={2.5} sx={{ mb: 3 }}>
-        <Grid item xs={12} sm={6} md={3}>
-          <StatCard
+      <Box sx={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 2.5, mb: 3 }}>
+        <StatCard
             title="Total Missions"
             value={missions.length}
             icon={<RadarIcon />}
             color="#1e6fd9"
           />
-        </Grid>
-        <Grid item xs={12} sm={6} md={3}>
-          <StatCard
+        <StatCard
             title="Active Missions"
             value={activeMissions.length}
             subtitle="Currently operational"
             icon={<TrendingUpIcon />}
             color="#00d4ff"
           />
-        </Grid>
-        <Grid item xs={12} sm={6} md={3}>
-          <StatCard
+        <StatCard
             title="Completed"
             value={completedMissions.length}
             icon={<CheckCircleIcon />}
             color="#10b981"
           />
-        </Grid>
-        <Grid item xs={12} sm={6} md={3}>
-          <StatCard
+        <StatCard
             title="System Status"
             value="Online"
             subtitle="All services operational"
             icon={<AccessTimeIcon />}
             color="#10b981"
           />
-        </Grid>
-      </Grid>
+      </Box>
 
-      <Grid container spacing={3}>
-        <Grid item xs={12} lg={8}>
-          <GlassCard sx={{ p: 3 }}>
+      <Box sx={{ display: 'grid', gridTemplateColumns: '1fr 360px', gap: 3 }}>
+        <GlassCard sx={{ p: 3 }}>
             <Typography variant="h6" fontWeight={600} gutterBottom>
               Recent Missions
             </Typography>
@@ -144,19 +136,21 @@ export function DashboardPage() {
               ))
             )}
           </GlassCard>
-        </Grid>
 
-        <Grid item xs={12} lg={4}>
-          <GlassCard sx={{ p: 3 }} delay={0.1}>
+        <GlassCard sx={{ p: 3 }} delay={0.1}>
             <Typography variant="h6" fontWeight={600} gutterBottom>
               Quick Start
             </Typography>
             <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
-              Begin a new rescue operation in 2 phases:
+              Full mission workflow — 6 phases implemented:
             </Typography>
             {[
               { phase: 1, title: 'Mission Creation', desc: 'Define incident details and object type' },
               { phase: 2, title: 'Incident Location', desc: 'Set last known position on ocean map' },
+              { phase: 3, title: 'Environmental Data', desc: 'Wind, currents, waves, and forecasts' },
+              { phase: 4, title: 'Simulation Setup', desc: 'Configure drift model and particles' },
+              { phase: 5, title: 'Drift Prediction', desc: 'View trajectories and AI analysis' },
+              { phase: 6, title: 'Search Area', desc: 'Probability zones and search grid' },
             ].map((step) => (
               <Box
                 key={step.phase}
@@ -205,8 +199,7 @@ export function DashboardPage() {
               Start New Mission
             </Button>
           </GlassCard>
-        </Grid>
-      </Grid>
-    </Box>
+      </Box>
+    </LaptopContainer>
   );
 }

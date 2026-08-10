@@ -1,3 +1,6 @@
+import type { SimulationConfig, SimulationResult, SearchAreaData } from './simulation';
+import type { LiveTrackingState, RescueDecisionData } from './tracking';
+
 export type IncidentType =
   | 'man_overboard'
   | 'vessel_distress'
@@ -45,6 +48,11 @@ export interface Mission {
   additionalNotes: string;
   status: MissionStatus;
   referencePoints: ReferencePoint[];
+  simulationConfig?: SimulationConfig;
+  simulationResult?: SimulationResult;
+  searchArea?: SearchAreaData;
+  liveTracking?: LiveTrackingState;
+  rescueDecision?: RescueDecisionData;
   createdAt: string;
   updatedAt: string;
 }

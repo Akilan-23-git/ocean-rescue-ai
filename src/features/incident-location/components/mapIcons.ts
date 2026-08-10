@@ -35,3 +35,17 @@ export const portIcon = L.divIcon({
   iconSize: [10, 10],
   iconAnchor: [5, 5],
 });
+
+export const liveTrackIcon = L.divIcon({
+  className: 'live-track-marker',
+  html: '<span class="live-track-dot"></span>',
+  iconSize: [20, 20],
+  iconAnchor: [10, 10],
+});
+
+export const vesselIcon = L.divIcon({
+  className: 'vessel-marker',
+  html: '<span class="vessel-dot"></span>',
+  iconSize: [16, 16],
+  iconAnchor: [8, 8],
+});

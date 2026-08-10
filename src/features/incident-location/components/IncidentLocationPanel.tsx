@@ -1,7 +1,6 @@
 import { useState, useCallback, useEffect, type ChangeEvent } from 'react';
 import {
   Box,
-  Grid,
   TextField,
   Button,
   Typography,
@@ -27,12 +26,15 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { GlassCard } from '@/components/ui/GlassCard';
 import { PageHeader, PhaseIndicator } from '@/components/ui/PageHeader';
 import { StatusChip } from '@/components/ui/StatusChip';
+import { LaptopContainer } from '@/components/layout/LaptopContainer';
+import { MissionWorkflowStepper } from '@/components/layout/MissionWorkflowStepper';
 import { OceanMap } from './OceanMap';
 import { useMission } from '@/features/mission/hooks/useMissions';
 import { missionService } from '@/features/mission/services/missionService';
 import { useMissionContext } from '@/context/MissionContext';
 import type { Coordinates, MapLayerVisibility, ReferencePoint } from '@/types';
 import { formatCoordinates, parseCoordinates, haversineDistance, generateId } from '@/utils';
+import { MAP_PANEL_HEIGHT, laptopMapColumn } from '@/constants/layout';
 
 const defaultLayers: MapLayerVisibility = {
   coastline: true,
@@ -151,7 +153,7 @@ export function IncidentLocationPanel() {
   const handleSave = () => {
     if (!missionId || !position) {
       setSnackbar({ open: true, message: 'Please set a last known position' });
-      return;
+      return false;
     }
     const updated = missionService.update(missionId, {
       lastKnownPosition: position,
@@ -161,6 +163,14 @@ export function IncidentLocationPanel() {
       setCurrentMission(updated);
       refetch();
       setSnackbar({ open: true, message: 'Location saved successfully' });
+      return true;
+    }
+    return false;
+  };
+
+  const handleContinue = () => {
+    if (handleSave()) {
+      navigate(`/missions/${missionId}/environment`);
     }
   };
 
@@ -176,7 +186,8 @@ export function IncidentLocationPanel() {
   }
 
   return (
-    <Box>
+    <LaptopContainer>
+      <MissionWorkflowStepper currentPhase={2} />
       <PageHeader
         title="Incident Location"
         subtitle={`Set last known position for mission ${mission.missionId}`}
@@ -184,9 +195,9 @@ export function IncidentLocationPanel() {
         action={<StatusChip status={mission.status} />}
       />
 
-      <Grid container spacing={3}>
-        <Grid item xs={12} lg={8}>
-          <GlassCard sx={{ p: 0, overflow: 'hidden', height: { xs: 400, md: 560 } }}>
+      <Box sx={{ ...laptopMapColumn, minHeight: MAP_PANEL_HEIGHT }}>
+        <Box>
+          <GlassCard sx={{ p: 0, overflow: 'hidden', height: MAP_PANEL_HEIGHT }}>
             <OceanMap
               position={position}
               referencePoints={referencePoints}
@@ -219,10 +230,10 @@ export function IncidentLocationPanel() {
               )}
             </Box>
           )}
-        </Grid>
+        </Box>
 
-        <Grid item xs={12} lg={4}>
-          <GlassCard sx={{ p: 2.5, mb: 2 }} delay={0.05}>
+        <Box sx={{ height: MAP_PANEL_HEIGHT, overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: 2 }}>
+          <GlassCard sx={{ p: 2.5 }} delay={0.05}>
             <Typography variant="subtitle1" fontWeight={600} gutterBottom>
               Coordinates
             </Typography>
@@ -261,7 +272,7 @@ export function IncidentLocationPanel() {
             </Button>
           </GlassCard>
 
-          <GlassCard sx={{ p: 2.5, mb: 2 }} delay={0.1}>
+          <GlassCard sx={{ p: 2.5 }} delay={0.1}>
             <Typography variant="subtitle1" fontWeight={600} gutterBottom>
               Map Layers
             </Typography>
@@ -304,7 +315,7 @@ export function IncidentLocationPanel() {
             />
           </GlassCard>
 
-          <GlassCard sx={{ p: 2.5, mb: 2 }} delay={0.15}>
+          <GlassCard sx={{ p: 2.5 }} delay={0.15}>
             <Typography variant="subtitle1" fontWeight={600} gutterBottom>
               Reference Points
             </Typography>
@@ -381,14 +392,14 @@ export function IncidentLocationPanel() {
               variant="contained"
               fullWidth
               endIcon={<ArrowForwardIcon />}
-              onClick={handleSave}
+              onClick={handleContinue}
               disabled={!position}
             >
-              Continue
+              Continue to Environmental Data
             </Button>
           </Box>
-        </Grid>
-      </Grid>
+        </Box>
+      </Box>
 
       <Snackbar
         open={snackbar.open}
@@ -397,6 +408,6 @@ export function IncidentLocationPanel() {
         message={snackbar.message}
         anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
       />
-    </Box>
+    </LaptopContainer>
   );
 }

@@ -33,6 +33,36 @@
   border-radius: 2px;
 }
 
+.port-dot {
+  display: block;
+  width: 10px;
+  height: 10px;
+  background: #10b981;
+  border: 2px solid #fff;
+  border-radius: 2px;
+}
+
+.live-track-dot {
+  display: block;
+  width: 20px;
+  height: 20px;
+  background: #00d4ff;
+  border: 3px solid #fff;
+  border-radius: 50%;
+  box-shadow: 0 0 16px rgba(0, 212, 255, 0.8);
+  animation: pulse 1.5s infinite;
+}
+
+.vessel-dot {
+  display: block;
+  width: 14px;
+  height: 14px;
+  background: #10b981;
+  border: 2px solid #fff;
+  transform: rotate(45deg);
+  box-shadow: 0 0 8px rgba(16, 185, 129, 0.6);
+}
+
 @keyframes pulse {
   0%,
   100% {
