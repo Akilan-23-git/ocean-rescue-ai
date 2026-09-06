@@ -55,7 +55,7 @@ export const liveTrackingService = {
     return interpolatePosition(points, hour);
   },
 
-  refreshConditions(state: LiveTrackingState): LiveConditions {
+  refreshConditions(_state: LiveTrackingState): LiveConditions {
     return mockConditions(Date.now());
   },
 
@@ -95,7 +95,7 @@ export const rescueDecisionService = {
     const end = mission.simulationResult.primaryPath.points.at(-1)!;
 
     const searchZones = mission.searchArea.zones
-      .map((z, i) => ({
+      .map((z) => ({
         id: z.id,
         name: `${z.level.charAt(0).toUpperCase() + z.level.slice(1)} Probability Zone`,
         priority: z.searchOrder,

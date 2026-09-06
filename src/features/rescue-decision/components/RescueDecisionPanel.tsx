@@ -240,8 +240,11 @@ export function RescueDecisionPanel() {
         <Button startIcon={<ArrowBackIcon />} onClick={() => navigate(`/missions/${missionId}/tracking`)}>
           Back to Live Tracking
         </Button>
-        <Button variant="contained" disabled sx={{ opacity: 0.5 }}>
-          Continue to Mission Management (Phase 9)
+        <Button
+          variant="contained"
+          onClick={() => navigate('/missions/active')}
+        >
+          Continue to Mission Management
         </Button>
       </Box>
     </LaptopContainer>

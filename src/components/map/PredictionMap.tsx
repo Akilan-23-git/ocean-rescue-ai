@@ -28,6 +28,8 @@ interface PredictionMapProps {
   livePosition?: Coordinates;
   rescueRoute?: Coordinates[];
   showVessels?: { lat: number; lng: number; label: string }[];
+  actualPath?: { lat: number; lng: number; hour?: number }[];
+  showActualPath?: boolean;
 }
 
 function MapController({
@@ -95,6 +97,8 @@ export function PredictionMap({
   livePosition,
   rescueRoute,
   showVessels,
+  actualPath,
+  showActualPath = false,
 }: PredictionMapProps) {
   const center = result?.primaryPath.points.at(-1) ?? origin;
   const zoom = result ? 9 : 8;
@@ -196,6 +200,19 @@ export function PredictionMap({
           <Popup>{v.label}</Popup>
         </Marker>
       ))}
+
+      {showActualPath && actualPath && actualPath.length > 1 && (
+        <Polyline
+          positions={
+            selectedHour === undefined
+              ? actualPath.map((p) => [p.lat, p.lng] as LatLngExpression)
+              : actualPath
+                  .filter((p) => p.hour === undefined || p.hour <= selectedHour)
+                  .map((p) => [p.lat, p.lng] as LatLngExpression)
+          }
+          pathOptions={{ color: '#f59e0b', weight: 4, opacity: 0.9 }}
+        />
+      )}
 
       {showPaths && result && (
         <>

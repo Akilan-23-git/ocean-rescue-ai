@@ -44,6 +44,7 @@ export const MISSION_STATUS = {
   SIMULATING: 'simulating',
   COMPLETED: 'completed',
   CANCELLED: 'cancelled',
+  ARCHIVED: 'archived',
 } as const;
 
 export const NAV_ITEMS = [

@@ -14,6 +14,7 @@ import {
   alpha,
 } from '@mui/material';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
+import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
 import ZoomInIcon from '@mui/icons-material/ZoomIn';
 import SearchIcon from '@mui/icons-material/Search';
 import { GlassCard } from '@/components/ui/GlassCard';

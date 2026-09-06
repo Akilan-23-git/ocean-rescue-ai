@@ -50,7 +50,7 @@ export function LiveTrackingPanel() {
   const { missionId } = useParams<{ missionId: string }>();
   const navigate = useNavigate();
   const { data: mission } = useMission(missionId);
-  const { tracking, remainingMs, start, pause, resume, replay, toggleAutoRefresh, isActive } =
+  const { tracking, remainingMs, start, pause, resume, replay, toggleAutoRefresh } =
     useLiveTracking(mission);
   const [countdown, setCountdown] = useState(remainingMs);
 
@@ -214,7 +214,6 @@ export function LiveTrackingPanel() {
           variant="contained"
           endIcon={<ArrowForwardIcon />}
           onClick={() => navigate(`/missions/${missionId}/decisions`)}
-          disabled={!isActive && tracking.status !== 'completed'}
         >
           Rescue Decision Support
         </Button>
