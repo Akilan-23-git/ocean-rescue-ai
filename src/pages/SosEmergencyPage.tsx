@@ -36,6 +36,8 @@ export function SosEmergencyPage() {
   const holdTimer = useRef<ReturnType<typeof setInterval> | null>(null);
   const holdStart = useRef<number>(0);
   const deviceId = useRef(getOrCreateDeviceId());
+  const activePointerId = useRef<number | null>(null);
+  const isTriggering = useRef<boolean>(false);
 
   const clearHold = useCallback(() => {
     if (holdTimer.current) {
@@ -83,6 +85,7 @@ export function SosEmergencyPage() {
     if (lat === null || lng === null || accuracy === null) {
       setError('Location permission is required to send an SOS.');
       setPhase('error');
+      isTriggering.current = false;
       return;
     }
     setPhase('sending');
@@ -107,11 +110,19 @@ export function SosEmergencyPage() {
     } catch {
       setPhase('error');
       setError('Unable to reach MSAR emergency API. Check connection and try again.');
+    } finally {
+      isTriggering.current = false;
     }
   }, [lat, lng, accuracy]);
 
-  const startHold = () => {
-    if (phase !== 'ready') return;
+  const startHold = (e: React.PointerEvent<HTMLElement>) => {
+    if (phase !== 'ready' || isTriggering.current) return;
+    try {
+      e.currentTarget.setPointerCapture(e.pointerId);
+      activePointerId.current = e.pointerId;
+    } catch {
+      // Ignore in environments where pointer capture is unsupported
+    }
     clearHold();
     setPhase('holding');
     holdStart.current = Date.now();
@@ -121,13 +132,26 @@ export function SosEmergencyPage() {
       setHoldPct(pct);
       if (pct >= 100) {
         clearHold();
-        void activateSos();
+        if (!isTriggering.current) {
+          isTriggering.current = true;
+          void activateSos();
+        }
       }
     }, 50);
   };
 
-  const endHold = () => {
-    if (phase === 'holding') {
+  const endHold = (e?: React.PointerEvent<HTMLElement>) => {
+    if (e && activePointerId.current !== null) {
+      try {
+        if (e.currentTarget.hasPointerCapture(activePointerId.current)) {
+          e.currentTarget.releasePointerCapture(activePointerId.current);
+        }
+      } catch {
+        // Ignore if pointer capture release fails
+      }
+      activePointerId.current = null;
+    }
+    if (phase === 'holding' && !isTriggering.current) {
       clearHold();
       setPhase('ready');
     }
@@ -198,6 +222,8 @@ export function SosEmergencyPage() {
         onPointerUp={endHold}
         onPointerLeave={endHold}
         onPointerCancel={endHold}
+        onLostPointerCapture={endHold}
+        onContextMenu={(e) => e.preventDefault()}
         sx={{
           width: 220,
           height: 220,
@@ -208,6 +234,8 @@ export function SosEmergencyPage() {
           flexDirection: 'column',
           cursor: phase === 'ready' || phase === 'holding' ? 'pointer' : 'not-allowed',
           userSelect: 'none',
+          WebkitUserSelect: 'none',
+          WebkitTouchCallout: 'none',
           touchAction: 'none',
           background:
             phase === 'sent'
